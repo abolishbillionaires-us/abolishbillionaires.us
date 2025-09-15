@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="format-detection" content='telephone=no'>
+    <meta name="description" content="A tax plan that would abolish billionaires in The United States. 🇺🇸">
+    <title>Abolish Billionaires</title>
+    <link rel="icon" href="favicon.png" type="image/x-icon">
+    <style>
+      html {
+        -webkit-text-size-adjust: none;
+      }
+      body {
+        font: 300 18px/180% Georgia, Times, Times New Roman, serif;
+        background-color: #c9d9c9;
+        background-image: url('monopoly.jpg');
+        background-position: center;
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;
+      }
+      strong {
+        font-weight: bold;
+      }
+      h1 {
+        display: block;
+        font-size: 180%;
+        font-weight: 100;
+      }
+      h2 {
+        display: block;
+        font-size: 150%;
+        font-weight: 100;
+      }
+      h3 {
+        display: block;
+        font-size: 110%;
+        font-weight: 100;
+      }
+      p, li, button {
+        margin: 15px;
+      }
+      a:link, a:active, a:visited {
+        color: #000;
+      }
+      li {
+        margin: 0 20px;
+      }
+      footer {
+        font-size: 80%;
+        margin-top: 50px;
+      }
+      footer p {
+        margin: 0 15px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Abolish Billionaires</h1>
+      <p>You may have heard the popular slogan "abolish billionaires" repeated from time to time. But what does that actually mean from a policy perspective? Different people mean different things when they say it, but few people have clearly laid out a specific definition. This document exists to offer one specific definition in the form of a tax policy proposal that if implemented will effectively abolish billionaires.</p>
+      <p>A <a href="https://en.wikipedia.org/wiki/Progressive_tax">progressive</a> annual <a href="https://en.wikipedia.org/wiki/Wealth_tax">wealth tax</a> can be used to effectively abolish billionaires. One straightforward approach would be to levy escalating tax brackets starting at 0.1% for wealth over $1 million which increase by another 0.1% for each additional $1 million in net worth up to 100% for amounts above $1 billion.</p>
+      <p>If this tax proposal is adopted, here are some example annual wealth taxes that would be levied at various net worths:</p>
+      <ul>
+        <li>$0 tax on $1 million of net worth: the first $1 million is exempt.</li>
+        <li>$1,000 tax on $2 million of net worth: the second $1 million is taxed at 0.1%.</li>
+        <li>$10,000 tax on $5 million of net worth:
+          <ul>
+            <li>The second $1 million is taxed at 0.1% ($1,000).</li>
+            <li>The third $1 million is taxed at 0.2% ($2,000).</li>
+            <li>The fourth $1 million is taxed at 0.3% ($3,000).</li>
+            <li>The fifth $1 million is taxed at 0.4% ($4,000).</li>
+          </ul>
+        </li>
+        <li>etc.</li>
+      </ul>
+      <p>This tax system would result in much steeper taxes for net worths approaching or exceeding $1 billion:</p>
+      <ul>
+        <li>$31,125,000 tax on $250 million of net worth.</li>
+        <li>$124,750,000 tax on $500 million of net worth.</li>
+        <li>$499,500,000 tax on $1 billion of net worth.</li>
+        <li>$1,499,500,000 tax on $2 billion of net worth.</li>
+        <li>etc.</li>
+      </ul>
+      <p>While it wouldn't be completely impossible to be a billionaire under a tax system like this, it would be much more difficult, so billionaires would be considerably more rare. As such, wealth inequality will be reduced dramatically if this proposal is adopted.</p>
+      <div id="js-only-area"></div>
+      <h2>But what about—?</h2>
+      <p>Enforceability questions, capital flight questions, constitutionality questions, etc. The political questions surrounding implementing a wealth tax have been debated ad nauseum, and there are answers to these questions. The IRS can be funded better to enforce this, laws can be passed to prevent capital flight, the Constitution can be amended if absolutely necessary, etc. These are solvable problems if the electorate wants this badly enough.</p>
+      <h2>How to make this happen</h2>
+      <p>We need to move the <a href="https://en.wikipedia.org/wiki/Overton_window">Overton window</a> on this proposal from unthinkably radical to mainstream and popular. For now that means sharing this document with as many people as possible and persuading them that it is sensible and necessary. The more people we get to take this idea seriously, the more likely it will be that we can get elected officials to take it seriously.</p>
+      <footer>
+        <aside>
+          <p><small>This document was made with love ❤️ for a country which will some day live up to the values it aspires to. 🇺🇸</small></p>
+          <p><small>Thanks to "HarshLight" for the <a href="https://www.flickr.com/photos/harshlight/3236314938/">background image</a>.</small></p>
+          <p><small>See previous revisions, planned future revisions, propose edits, and discuss this document <a href="https://github.com/abolishbillionaires-us/abolishbillionaires.us">on GitHub</a>.</small></p>
+          <p><small>If you like abolishing things that shouldn't exist in the United States, take a look at <a href="https://abolishmalapportionment.us">Abolish Malapportionment</a> as well.</small></p>
+        </aside>
+      </footer>
+    </main>
+    <script>
+      document.querySelector('#js-only-area').innerHTML = `
+        <h2 id="calculator">How much wealth tax would you owe?</h2>
+        <p>If you want to see how much wealth tax someone would owe under this tax system based on their net worth, tap this button and type their net worth:</p>
+        <button>Calculate wealth tax</button>
+        <output></output>
+      `
+      document.querySelector('button').addEventListener('click', event => {
+        const netWorth = parseInt(window.prompt('How much net worth does the taxpayer have?', '$1,000,000,000').replaceAll(/\D/g, ''))
+
+        let progressiveTaxRate = 0.001 // 0.1% per million
+        let bracket = 0
+        let totalTax = 0
+        let taxBracketsHTML = ''
+        for (let i = 0; i < netWorth; i = i + 1000000) {
+          if (i > 0) {
+            bracket += progressiveTaxRate
+            bracket = parseFloat(bracket.toFixed(3))
+          }
+          const lBound = i
+          const uBound = i + 1000000
+          let taxOnThisMillion = 1000000 * bracket
+          if (taxOnThisMillion > 1000000) taxOnThisMillion = 1000000
+          totalTax += taxOnThisMillion
+          let displayBracket = (bracket * 100).toFixed(1)
+          if (displayBracket >= 100) displayBracket = 100
+          if (displayBracket <= 0) displayBracket = 0
+          taxBracketsHTML += `<li>Tax on $${format(lBound)} to $${format(uBound)} of net worth: $${format(taxOnThisMillion)} (${displayBracket}%)</li>`
+        }
+
+        document.querySelector('output').innerHTML = `
+          <p>Net worth: <strong>$${format(netWorth)}</strong></p>
+          <p>Wealth tax: <strong>$${format(totalTax)}</strong></p>
+          <h3>Full breakdown of tax brackets:</h3>
+          <ol>${taxBracketsHTML}</ol>
+          <p><small>Note: all figures are rounded to the nearest dollar.</small></p>
+          <p>↑ <a href="#calculator">Back to top</a></p>
+        `
+
+        function format (str) {
+          str = Math.round(parseInt(str))
+          return str.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+        }
+      })
+    </script>
+  </body>
+</html>
