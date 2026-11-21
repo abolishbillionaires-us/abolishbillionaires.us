@@ -6,10 +6,10 @@
     <meta name="format-detection" content='telephone=no'>
     <meta name="description" content="A tax plan that would abolish billionaires in The United States. 🇺🇸">
     <title>Abolish Billionaires</title>
-    <link rel="icon" href="favicon.png" type="image/x-icon">
+    <link rel="icon" href="favicon.png" type="image/png">
     <style>
       html {
-        -webkit-text-size-adjust: none;
+        -webkit-text-size-adjust: 100%;
       }
       body {
         font: 300 18px/180% Georgia, Times, Times New Roman, serif;
@@ -84,7 +84,7 @@
         <li>$1,499,500,000 tax on $2 billion of net worth.</li>
         <li>etc.</li>
       </ul>
-      <p>While it wouldn't be completely impossible to be a billionaire under a tax system like this, it would be much more difficult, so billionaires would be considerably more rare. As such, wealth inequality will be reduced dramatically if this proposal is adopted.</p>
+      <p>Because every dollar above $1 billion is taxed at 100%, no one could keep more than $500.5 million of net worth after paying the tax each year. It wouldn't be completely impossible to be a billionaire under a tax system like this, but it would require roughly doubling that $500.5 million in a single year before the next assessment, so billionaires would be extremely rare. As such, wealth inequality will be reduced dramatically if this proposal is adopted.</p>
       <div id="js-only-area"></div>
       <h2>But what about—?</h2>
       <p>Enforceability questions, capital flight questions, constitutionality questions, etc. The political questions surrounding implementing a wealth tax have been debated ad nauseum, and there are answers to these questions. The IRS can be funded better to enforce this, laws can be passed to prevent capital flight, the Constitution can be amended if absolutely necessary, etc. These are solvable problems if the electorate wants this badly enough.</p>
@@ -106,41 +106,45 @@
         <button>Calculate wealth tax</button>
         <output></output>
       `
-      document.querySelector('button').addEventListener('click', event => {
-        const netWorth = parseInt(window.prompt('How much net worth does the taxpayer have?', '$1,000,000,000').replaceAll(/\D/g, ''))
+      document.querySelector('button').addEventListener('click', () => {
+        const output = document.querySelector('output')
+        const input = window.prompt('How much net worth does the taxpayer have?', '$1,000,000,000')
+        if (input === null) return // user pressed cancel
 
-        let progressiveTaxRate = 0.001 // 0.1% per million
-        let bracket = 0
-        let totalTax = 0
-        let taxBracketsHTML = ''
-        for (let i = 0; i < netWorth; i = i + 1000000) {
-          if (i > 0) {
-            bracket += progressiveTaxRate
-            bracket = parseFloat(bracket.toFixed(3))
-          }
-          const lBound = i
-          const uBound = i + 1000000
-          let taxOnThisMillion = 1000000 * bracket
-          if (taxOnThisMillion > 1000000) taxOnThisMillion = 1000000
-          totalTax += taxOnThisMillion
-          let displayBracket = (bracket * 100).toFixed(1)
-          if (displayBracket >= 100) displayBracket = 100
-          if (displayBracket <= 0) displayBracket = 0
-          taxBracketsHTML += `<li>Tax on $${format(lBound)} to $${format(uBound)} of net worth: $${format(taxOnThisMillion)} (${displayBracket}%)</li>`
+        // accepts things like "1000000", "$1,000,000", "$1,000,000.00", "-$50,000", and "$-50,000"
+        const match = input.match(/^\s*(-?)\s*\$?\s*(-?)\s*([\d,]+)(\.\d*)?\s*$/)
+        const netWorth = match ? Number((match[1] || match[2]) + match[3].replaceAll(',', '')) : NaN
+        if (!Number.isSafeInteger(netWorth)) {
+          output.innerHTML = `<p>${match ? 'That number is too large to calculate.' : 'Please enter a net worth as a dollar amount, e.g. $1,000,000,000.'}</p>`
+          return
         }
 
-        document.querySelector('output').innerHTML = `
-          <p>Net worth: <strong>$${format(netWorth)}</strong></p>
+        const million = 1000000
+        let totalTax = 0
+        let taxBracketsHTML = ''
+        for (let i = 0; i < netWorth; i = i + million) {
+          const millionsBelow = i / million
+          const rate = Math.min(millionsBelow / 1000, 1) // 0.1% more for each additional million, up to 100%
+          const lBound = i
+          // everything above $1 billion is taxed at 100%, so combine it into one row instead of one row per million
+          const uBound = rate >= 1 ? netWorth : Math.min(i + million, netWorth)
+          // round each row to the nearest dollar so the rows add up exactly to the total
+          const taxOnThisBracket = rate >= 1 ? uBound - lBound : Math.round((uBound - lBound) * millionsBelow / 1000)
+          totalTax += taxOnThisBracket
+          taxBracketsHTML += `<li>Tax on $${format(lBound)} to $${format(uBound)} of net worth: $${format(taxOnThisBracket)} (${(rate * 100).toFixed(1)}%)</li>`
+          if (rate >= 1) break
+        }
+
+        output.innerHTML = `
+          <p>Net worth: <strong>${netWorth < 0 ? '-' : ''}$${format(Math.abs(netWorth))}</strong></p>
           <p>Wealth tax: <strong>$${format(totalTax)}</strong></p>
-          <h3>Full breakdown of tax brackets:</h3>
-          <ol>${taxBracketsHTML}</ol>
+          ${taxBracketsHTML ? `<h3>Full breakdown of tax brackets:</h3><ol>${taxBracketsHTML}</ol>` : '<p>No wealth tax is owed on a net worth of zero or less.</p>'}
           <p><small>Note: all figures are rounded to the nearest dollar.</small></p>
           <p>↑ <a href="#calculator">Back to top</a></p>
         `
 
-        function format (str) {
-          str = Math.round(parseInt(str))
-          return str.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+        function format (num) {
+          return Math.round(num).toLocaleString('en-US')
         }
       })
     </script>
